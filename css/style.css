@@ -401,7 +401,7 @@ a:focus-visible,
   font-weight: 700;
   letter-spacing: 0.08em;
   /* 会社名（最上部の一行）を強調。見出し(h1)より小さく保ちつつ拡大。 */
-  font-size: clamp(1.1rem, 3.2vw, 1.35rem);
+  font-size: clamp(1.1rem, 3.2vw, 1.6rem);
   /* A3：肩書き（eyebrow）と大きな見出しの間に少しゆとりを持たせる。 */
   margin-bottom: 0.75rem;
 }
