@@ -95,6 +95,17 @@ body {
   scroll-margin-top: var(--header-height);
 }
 
+/* 「ページ先頭へ戻る」の着地点。body 直下の不可視アンカー。
+   - サイズ0・装飾なしでレイアウトに一切影響させない。
+   - 上の :target ルールはヘッダー高さ分の余白を入れるが、#top は
+     ドキュメント最上部（y=0）へ戻したいので scroll-margin-top を 0 に上書きする。
+     これで #top アンカー／JS どちらでも確実に最上部へ着地する。 */
+#top {
+  display: block;
+  height: 0;
+  scroll-margin-top: 0;
+}
+
 /* ---------- 4. レイアウト土台 ---------- */
 .container {
   width: 100%;

@@ -59,8 +59,19 @@
   -->
   <a class="skip-link" href="#main-content">本文へスキップ</a>
 
+  <!--
+    「ページ先頭へ戻る」の着地点（不可視アンカー）。
+    以前は id="top" を固定ヘッダー（position:fixed）に付けていたが、固定要素は
+    常に画面内にあるためブラウザが「既に表示済み」と判断し #top でスクロールが
+    起きなかった。そこで id="top" を body 直下の「非固定」要素へ移し、純HTMLでも
+    確実にドキュメント先頭（y=0）を指すようにする。サイズ0・装飾なしでレイアウト不変。
+    （:target の scroll-margin-top は CSS 側で #top のみ 0 に上書きし、ヘッダー高さ分
+    潜り込む／ずれるのを防ぐ。確実性のため main.js でも scrollTo(0) を併用する。）
+  -->
+  <span id="top" aria-hidden="true"></span>
+
   <!-- ============ ヘッダー / ナビ（Sprint 0 で枠、機能は Sprint 6） ============ -->
-  <header class="site-header" id="top">
+  <header class="site-header">
     <div class="container site-header__inner">
       <!-- ロゴ（屋号 or 氏名）。クリックでトップへ。 -->
       <a class="site-header__logo" href="#top">岡﨑 好信</a>

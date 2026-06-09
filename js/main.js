@@ -16,6 +16,24 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) root.classList.add('reduce');
 
+  /* ---------- 「ページ先頭へ戻る」を確実に y=0 へ ----------
+     フッターの Top ボタンとヘッダーのロゴ（どちらも href="#top"）を押した時、
+     確実にドキュメント最上部へ戻す。id="top" は body 直下の非固定アンカーへ
+     移したので純HTMLでも #top が最上部を指すが、scroll-margin や将来の構造変更に
+     左右されず必ず y=0 に着地させるため JS でも明示的に scrollTo(0) する。
+     reduced-motion 時は瞬時（auto）、それ以外はスムーズに。
+     クリックは委譲（document 1か所）で、ロゴ／フッターどちらも・モバイル/PC両対応。 */
+  document.addEventListener('click', function (e) {
+    var topLink = e.target.closest('a[href="#top"]');
+    if (!topLink) return;
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    // URL のハッシュ(#top)も付与し、純HTMLと同等の状態に揃える（履歴を汚さない）。
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#top');
+    }
+  });
+
   /* ---------- ハンバーガーメニュー開閉 ---------- */
   var toggle = document.querySelector('.nav-toggle');
   var nav = document.getElementById('global-nav');
