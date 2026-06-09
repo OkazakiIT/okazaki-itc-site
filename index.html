@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  個人事業主 名刺代わりサイト  /  1ページ完結・モバイルファースト
+  - バックエンド無し（HTML / CSS / JS のみ）。AWS S3 + CloudFront で配信予定。
+  - 依頼主（岡﨑好信氏／岡﨑ＩＴコンサルティング株式会社）の実データを反映済み（Sprint 7）。
+  - 連絡先メール・SNSリンク・本番ドメインはプレースホルダー（公開前に差し替え：DEPLOY.md 参照）。
+  ============================================================
+-->
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <!-- モバイルファースト：端末幅に合わせて表示（拡大縮小は許可してアクセシビリティ確保） -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO / 共有用メタ -->
+  <title>岡﨑 好信 | 岡﨑ＩＴコンサルティング株式会社</title>
+  <meta name="description" content="生産管理・現場改善・ＩＴ化を軸に、中小企業の成長を支援する経営コンサルタント。トヨタ生産方式と日中での豊富な現場経験に基づくコンサルティングを行います。" />
+  <meta name="theme-color" content="#2b6cb0" />
+
+  <!-- ファビコン -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!--
+    OGP / Twitter Card（SNSシェア時のカード表示）
+    ※ og:url と og:image は本番では「絶対URL」が必要。デプロイ確定後、
+      下記 https://example.com を実ドメインに一括置換すること（TODO・Sprint 8 最終）。
+  -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:site_name" content="岡﨑ＩＴコンサルティング株式会社" />
+  <meta property="og:title" content="岡﨑 好信 | 岡﨑ＩＴコンサルティング株式会社" />
+  <meta property="og:description" content="生産管理・現場改善・ＩＴ化を軸に、中小企業の成長を支援する経営コンサルタント。" />
+  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:image" content="https://example.com/ogp.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://example.com/" />
+
+  <!-- 共通スタイル -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <!-- ============ ヘッダー / ナビ（Sprint 0 で枠、機能は Sprint 6） ============ -->
+  <header class="site-header" id="top">
+    <div class="container site-header__inner">
+      <!-- ロゴ（屋号 or 氏名）。クリックでトップへ。 -->
+      <a class="site-header__logo" href="#top">岡﨑 好信</a>
+
+      <!-- モバイル用ハンバーガー（開閉動作は Sprint 6 で JS 実装） -->
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-label="メニューを開く"
+        aria-expanded="false"
+        aria-controls="global-nav"
+      >
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+
+      <!-- グローバルナビ：各セクションへのアンカー -->
+      <nav class="global-nav" id="global-nav" aria-label="メインメニュー">
+        <ul class="global-nav__list">
+          <li><a href="#about">プロフィール</a></li>
+          <li><a href="#services">サービス</a></li>
+          <li><a href="#works">実績</a></li>
+          <li><a href="#contact">お問い合わせ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ Sprint 1: ヒーロー ============ -->
+    <section class="hero" id="hero" aria-label="ヒーロー">
+      <div class="container hero__inner">
+        <!-- 左：テキスト（モバイルでは上） -->
+        <div class="hero__body">
+          <p class="hero__eyebrow">岡﨑ＩＴコンサルティング株式会社　取締役</p>
+          <!-- キャッチコピー（各画面幅で折れない位置に改行を固定） -->
+          <h1 class="hero__title">生産管理から<br />ＩＴ・人材育成まで。<br />ものづくりに、伴走する。</h1>
+          <p class="hero__lead">
+            トヨタ生産方式に基づく生産管理・現場改善から、ＭＥＳ・ＳＡＰなどの
+            ＩＴ導入、海外（中国）展開支援まで。30年以上の現場経験で、
+            企業の強みを引き出します。
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#contact">お問い合わせはこちら</a>
+            <a class="btn btn--ghost" href="#services">サービスを見る</a>
+          </div>
+        </div>
+
+        <!-- 右：メインビジュアル（モバイルでは下）／セミナー登壇の様子 -->
+        <div class="hero__visual">
+          <img
+            class="hero__image"
+            src="images/hero.jpg"
+            width="984"
+            height="656"
+            alt="セミナーで登壇する岡﨑好信"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Sprint 2: プロフィール ============ -->
+    <section class="about section" id="about" aria-label="プロフィール">
+      <div class="container">
+        <!-- 共通見出しパーツ（英語ラベル＋日本語見出し） -->
+        <header class="section-head">
+          <p class="section-head__eyebrow">About</p>
+          <h2 class="section-head__title">プロフィール</h2>
+        </header>
+
+        <div class="about__inner">
+          <!-- 顔写真（正面ポートレート） -->
+          <figure class="about__figure">
+            <img
+              class="about__image"
+              src="images/profile.jpg"
+              width="419"
+              height="526"
+              alt="岡﨑好信"
+            />
+          </figure>
+
+          <!-- 自己紹介本文＋基本情報 -->
+          <div class="about__body">
+            <p class="about__name">岡﨑 好信 <span class="about__role">／ おかざき よしのぶ・取締役</span></p>
+            <p class="about__text">
+              1987年にオムロン株式会社へ入社し、生産情報システム部門で、生産ラインの改善（ＩＥ）から
+              製造実行システム（ＭＥＳ）の開発までを担当。カンバン・平準化などトヨタ生産方式の根幹となる
+              仕組みづくりと、部品調達のＥＤＩ化を含むＳＣＭ革新に取り組みました。
+            </p>
+            <p class="about__text">
+              2004年からは上海工場のＳＣＭ構築・ＥＲＰ／ＭＥＳ導入を主導。2010年に独立して
+              岡﨑ＩＴコンサルティング株式会社を設立し、中国（温州・上海・蘇州ほか／通算12年）と
+              日本の製造業に対して、現場改善・ＩＴ導入・経営制度改革を支援してきました。現在は
+              関東の金属加工・食品メーカーで、ＫＰＩマネジメントや原価管理、ＭＥＳ導入などの
+              コンサルティングを行っています。
+            </p>
+
+            <!-- 基本情報 -->
+            <dl class="about__facts">
+              <div class="about__fact">
+                <dt>拠点</dt>
+                <dd>日本国内・中国（上海／浙江省・江蘇省ほか）</dd>
+              </div>
+              <div class="about__fact">
+                <dt>専門領域</dt>
+                <dd>製造業の生産管理・現場改善（TPS・5S/6S・レイアウト）／ERP・MES導入・運用改善／原価改善・在庫低減／IoT・AI導入支援／プロジェクトマネジメント（PMO）</dd>
+              </div>
+              <div class="about__fact">
+                <dt>活動歴</dt>
+                <dd>製造・ＩＴ 1987年〜／コンサルタント 2010年〜</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Sprint 3: サービス / 事業内容 ============ -->
+    <section class="services section" id="services" aria-label="サービス">
+      <div class="container">
+        <header class="section-head">
+          <p class="section-head__eyebrow">Services</p>
+          <h2 class="section-head__title">サービス</h2>
+        </header>
+
+        <!-- サービス一覧（ul/li で「項目の集まり」を意味づけ） -->
+        <ul class="service-grid">
+          <li class="service-card">
+            <!-- アイコンは装飾なので aria-hidden（読み上げ対象外） -->
+            <span class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </span>
+            <h3 class="service-card__title">生産管理・現場改善</h3>
+            <p class="service-card__desc">
+              トヨタ生産方式（精益生産）をベースに、5S・6S、レイアウト最適化、
+              可視化管理、自動化・セル生産の提案まで。製造現場のムダを取り、
+              品質と生産性を高めます。
+            </p>
+          </li>
+
+          <li class="service-card">
+            <span class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+              </svg>
+            </span>
+            <h3 class="service-card__title">ＩＴ・システム導入（ＭＥＳ／ＳＡＰ）</h3>
+            <p class="service-card__desc">
+              ＭＥＳ・ＳＡＰなどの基幹システム導入を、業務分析（Fit&amp;Gap）から
+              安定運用まで一気通貫で支援。IoTでの稼働管理や、AIによる需要予測・
+              作業分析にも対応します。
+            </p>
+          </li>
+
+          <li class="service-card">
+            <span class="service-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </span>
+            <h3 class="service-card__title">経営制度改革・海外（中国）支援</h3>
+            <p class="service-card__desc">
+              原価管理・方針管理・KPIマネジメントの仕組みづくり、提案制度や
+              人材育成による組織活性化。中国12年の経験を活かし、海外進出や
+              現地工場の改善も支援します。
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ Sprint 4: 経歴・実績 ============ -->
+    <section class="works section" id="works" aria-label="経歴・実績">
+      <div class="container">
+        <header class="section-head">
+          <p class="section-head__eyebrow">Works &amp; Career</p>
+          <h2 class="section-head__title">経歴・実績</h2>
+        </header>
+
+        <!-- 実績（画像カード。実画像は Sprint 7 で差し替え） -->
+        <h3 class="works__subtitle">制作・実績</h3>
+        <ul class="works-grid">
+          <li class="work-card">
+            <img class="work-card__image" src="images/work-award.jpg" width="1024"
+              height="683" alt="温州市 雁蕩友誼賞の授賞式" />
+            <div class="work-card__body">
+              <h4 class="work-card__title">雁蕩友誼賞 受賞（2013年）</h4>
+              <p class="work-card__desc">
+                中国・温州市政府より、地域への貢献が認められ外国人専門家として表彰。
+              </p>
+            </div>
+          </li>
+          <li class="work-card">
+            <img class="work-card__image" src="images/work-onsite.jpg" width="648"
+              height="486" alt="中国ローカル企業での現場指導" />
+            <div class="work-card__body">
+              <h4 class="work-card__title">中国ローカル企業での現場指導</h4>
+              <p class="work-card__desc">
+                生産管理やトヨタ生産方式（精益生産）の導入を、現場に入って直接支援。
+              </p>
+            </div>
+          </li>
+          <li class="work-card">
+            <img class="work-card__image" src="images/hero.jpg" width="984"
+              height="656" alt="セミナーでの講演の様子" />
+            <div class="work-card__body">
+              <h4 class="work-card__title">セミナー・講演活動</h4>
+              <p class="work-card__desc">
+                日中の企業・団体向けに、生産管理やＩＴ化をテーマとした講演を実施。
+              </p>
+            </div>
+          </li>
+        </ul>
+
+        <!-- メディア掲載 -->
+        <h3 class="works__subtitle works__subtitle--timeline">メディア掲載</h3>
+        <ul class="works-grid">
+          <li class="work-card">
+            <img class="work-card__image" src="images/media-nhk.jpg" width="516"
+              height="302" alt="NHK WORLD で取材を受ける岡﨑好信" />
+            <div class="work-card__body">
+              <h4 class="work-card__title">NHK WORLD で紹介</h4>
+              <p class="work-card__desc">
+                生産管理・現場改善の取り組みが、NHK WORLD の番組で取り上げられました。
+              </p>
+            </div>
+          </li>
+          <li class="work-card">
+            <img class="work-card__image" src="images/media-news.jpg" width="425"
+              height="510" alt="岡﨑好信を紹介する新聞記事（中国・温州）" />
+            <div class="work-card__body">
+              <h4 class="work-card__title">新聞掲載（中国・温州）</h4>
+              <p class="work-card__desc">
+                雁蕩友誼賞の受賞にあたり、現地紙で取り組みが紹介されました。
+              </p>
+            </div>
+          </li>
+        </ul>
+
+        <!-- 経歴（タイムライン） -->
+        <h3 class="works__subtitle works__subtitle--timeline">経歴</h3>
+        <ol class="timeline">
+          <li class="timeline__item">
+            <span class="timeline__year">1987</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">オムロン岡山 入社</h4>
+              <p class="timeline__desc">
+                生産技術部にＩＥマンとして配属。現場改善に加え、現場情報システム
+                （POP）・看板システム・ＥＤＩなど、ものづくりの情報化を推進。
+              </p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__year">2005</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">オムロン上海工場へ赴任</h4>
+              <p class="timeline__desc">
+                ＳＣＭ／ＩＴ課で、物流革新とＩＴ導入・展開を主導。
+              </p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__year">2008</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">オムロン草津事業所へ赴任</h4>
+              <p class="timeline__desc">
+                商品技術部で、図面管理・設計変更管理を担当。
+              </p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__year">2010</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">岡﨑ＩＴコンサルティング株式会社 設立</h4>
+              <p class="timeline__desc">
+                独立。中国（温州・上海・蘇州・杭州ほか）でローカル企業・仕入先を指導。
+                ＢＰＲ・ＳＡＰ／ＭＥＳ導入、5S・6S、人材育成を支援。
+              </p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__year">2013</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">雁蕩友誼賞 受賞（中国・温州市）</h4>
+              <p class="timeline__desc">
+                地域への貢献が認められ、外国人専門家として温州市より表彰。
+              </p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__year">2017</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">関東の金属加工メーカーを支援（現在も継続）</h4>
+              <p class="timeline__desc">
+                現場6S改善・レイアウト最適化に加え、KPIマネジメントや原価管理の
+                再構築、AI・IoT活用による生産性向上を支援。
+              </p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__year">2022</span>
+            <div class="timeline__content">
+              <h4 class="timeline__title">岡山県産業振興財団 デジタル化推進コーディネーター</h4>
+              <p class="timeline__desc">
+                県内企業のデジタル化（DX）推進を支援。
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ Sprint 5: お問い合わせ ============ -->
+    <section class="contact section" id="contact" aria-label="お問い合わせ">
+      <div class="container">
+        <header class="section-head">
+          <p class="section-head__eyebrow">Contact</p>
+          <h2 class="section-head__title">お問い合わせ</h2>
+        </header>
+
+        <div class="contact__card">
+          <p class="contact__text">
+            生産管理・現場改善・ＩＴ化に関するご相談・ご依頼はお気軽にご連絡ください。<br />
+            内容を確認のうえ、数日以内にご返信いたします。
+          </p>
+
+          <!-- 主導線：メール（バックエンド不要。実アドレスは Sprint 7 で差し替え） -->
+          <a class="btn btn--primary contact__mail" href="mailto:oka87005@hotmail.co.jp">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m22 7-10 6L2 7" />
+            </svg>
+            メールで問い合わせる
+          </a>
+
+          <!-- メールアドレス（クリックで起動・コピーも可） -->
+          <p class="contact__address">
+            <a href="mailto:oka87005@hotmail.co.jp">oka87005@hotmail.co.jp</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Sprint 5: フッター ============ -->
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <div class="site-footer__brand">
+        <p class="site-footer__logo">岡﨑ＩＴコンサルティング株式会社</p>
+        <p class="site-footer__tagline">取締役　岡﨑 好信</p>
+      </div>
+
+      <!-- ページトップへ戻る -->
+      <a class="site-footer__top" href="#top" aria-label="ページの先頭へ戻る">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <path d="m18 15-6-6-6 6" />
+        </svg>
+        Top
+      </a>
+
+      <p class="site-footer__copy">&copy; 2026 岡﨑ＩＴコンサルティング株式会社. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- 共通スクリプト（ナビ開閉・スクロール演出は Sprint 6 で実装） -->
+  <script src="js/main.js" defer></script>
+</body>
+</html>

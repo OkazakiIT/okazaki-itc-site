@@ -1,0 +1,17 @@
+# === 公開リポジトリに含めないもの ===
+
+# 依頼主の私的資料（職務経歴・自己紹介・顔写真の原本など）
+# ※ここに個人情報が入っているため、GitHubには絶対に上げない
+client_source/
+
+# OS / エディタが作る一時ファイル
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+*~
+
+# 各種ローカル設定（必要なら各自で）
+.vscode/
+.idea/

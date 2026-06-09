@@ -1,0 +1,8 @@
+# テキストファイルは LF で正規化（Windows/Mac 混在でも余計な差分を出さない）
+* text=auto eol=lf
+
+# バイナリ（画像）は変換しない
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.ico binary

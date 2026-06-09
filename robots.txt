@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO(Sprint 8 最終): 本番ドメインに差し替え
+Sitemap: https://example.com/sitemap.xml
