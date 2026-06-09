@@ -113,6 +113,14 @@ body {
   background: var(--color-bg-subtle);
 }
 
+/* A2：セクション間リズムの整理（ごく控えめに）。
+   白⇄オフホワイトの境目を、既存ボーダー色のヘアラインだけで静かに区切る。
+   濃い線・色は使わず「面の切り替わり」をわずかに明確化するだけ。
+   nth-of-type(even) と隣接 even は連続しないため、各境界に1本ずつ入る。 */
+.section + .section {
+  border-top: 1px solid var(--color-border);
+}
+
 /* ---------- 5. ヘッダー / ナビ枠（機能は Sprint 6） ---------- */
 .site-header {
   position: fixed; /* スクロールしても常に上部に固定 */
@@ -162,11 +170,21 @@ body {
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   transform: translateY(-120%); /* 画面外へ退避 */
-  transition: transform var(--transition);
+  /* D2：閉じている間は visibility:hidden で「フォーカス不可」にする。
+     これまで画面外(translateY)でも DOM上はフォーカス可能で、キーボードで
+     見えないリンクに Tab 侵入できる欠陥があった。visibility:hidden は
+     配下の a もまとめてタブ順序から外す（display と違い transform の
+     スライドインを壊さない）。開く瞬間は即座に可視化したいので、
+     visibility のみ遅延なしで切り替える。 */
+  visibility: hidden;
+  transition: transform var(--transition), visibility 0s linear var(--transition);
 }
 
 .global-nav.is-open {
   transform: translateY(0);
+  visibility: visible;
+  /* 開く時は visibility を遅延させない（即フォーカス可能に） */
+  transition: transform var(--transition), visibility 0s;
 }
 
 .global-nav__list {
@@ -183,6 +201,14 @@ body {
 
 .global-nav__list a:hover {
   color: var(--color-accent);
+}
+
+/* C1：スクロールスパイの現在地ハイライト（控えめに）。
+   JS が aria-current="page" を1つだけ付与する。色＝アクセント＋太字。
+   JS無効時はこのルールが一切効かない（aria-current が付かない）ので無害。 */
+.global-nav__list a[aria-current="page"] {
+  color: var(--color-accent);
+  font-weight: 700;
 }
 
 /* ============================================================
@@ -204,6 +230,10 @@ body {
     transform: none;
     background: transparent;
     border: none;
+    /* D2：768px以上はナビ常時表示。閉/開に関係なく必ずフォーカス可能に戻す
+       （モバイルの visibility:hidden 既定を打ち消す）。 */
+    visibility: visible;
+    transition: none;
   }
 
   .global-nav__list {
@@ -214,6 +244,15 @@ body {
   .global-nav__list a {
     padding: 0;
     border: none;
+    /* C1（PC）：現在地に下線を出すための土台。
+       下線分の高さを常に確保し、active 切替で行が動かないようにする。 */
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+  }
+
+  /* C1（PC）：現在地リンクの控えめな下線（アクセント色）。 */
+  .global-nav__list a[aria-current="page"] {
+    border-bottom-color: var(--color-accent);
   }
 }
 
@@ -240,6 +279,53 @@ a:focus-visible,
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* main へプログラム的にフォーカスを移した際、太い枠を出さない
+   （スキップリンク着地時の視覚ノイズを避ける）。スクロール位置は
+   固定ヘッダーに潜らないよう scroll-margin-top で調整。 */
+#main-content {
+  scroll-margin-top: var(--header-height);
+}
+#main-content:focus {
+  outline: none;
+}
+
+/* ============================================================
+   D1：スキップリンク（visually-hidden → フォーカスで出現）
+   通常はサイズ 0 に畳んで視覚・レイアウトから除外（読み上げ順には残る）。
+   キーボードでフォーカスされた時だけ左上にアクセント色で出現させる王道。
+   ============================================================ */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1100; /* 固定ヘッダー(z:1000)より前面に出す */
+  /* 通常は視覚から隠す（display:none は読み上げ・フォーカスを奪うので使わない）。
+     clip + サイズ0 の visually-hidden 方式。 */
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 0 0 var(--radius) 0;
+}
+
+/* フォーカス時：可視化して左上に表示。clip 解除で実寸へ。 */
+.skip-link:focus,
+.skip-link:focus-visible {
+  width: auto;
+  height: auto;
+  padding: 0.6rem 1.2rem;
+  clip: auto;
+  clip-path: none;
+  outline: 2px solid #fff;
+  outline-offset: -4px; /* アクセント背景の内側に白枠を出して視認性を上げる */
 }
 
 /* ============================================================
@@ -293,7 +379,8 @@ a:focus-visible,
 .hero__inner {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  /* A3：テキスト塊と画像の「間」を少し広げ、上品な余白に（装飾は増やさない）。 */
+  gap: calc(var(--space-md) + var(--space-xs));
   align-items: center;
   text-align: center;
 }
@@ -303,19 +390,30 @@ a:focus-visible,
   font-weight: 700;
   letter-spacing: 0.08em;
   font-size: 0.95rem;
-  margin-bottom: var(--space-xs);
+  /* A3：肩書き（eyebrow）と大きな見出しの間に少しゆとりを持たせる。 */
+  margin-bottom: 0.75rem;
 }
 
 .hero__title {
-  /* キャッチコピーは3行・最長12字（「ものづくりに、伴走する。」）。
+  /* キャッチコピーは3フレーズ・最長12字（「ものづくりに、伴走する。」）。
      タブレットの2カラム時の狭い文字幅でも折れない上限に調整。 */
   font-size: clamp(1.4rem, 4.5vw, 1.9rem);
   line-height: 1.55;
   letter-spacing: 0.01em;
 }
 
+/* ヒーロー見出しのフレーズ単位折り返し（手動<br>を廃した堅牢方式）。
+   各フレーズを inline-block の塊にして、フレーズ内では改行させない
+   （語中改行・孤立を防止）。画面幅に応じてフレーズ間でのみ折り返す。
+   word-break: keep-all で和文の途中改行を念のため抑止。 */
+.hero__title-phrase {
+  display: inline-block;
+  word-break: keep-all;
+}
+
 .hero__lead {
-  margin-top: var(--space-sm);
+  /* A3：見出し直下のリード文に少し「間」を持たせ、ゆったり読ませる。 */
+  margin-top: 1.25rem;
   color: var(--color-text-muted);
   max-width: 32rem;
 }
@@ -401,6 +499,70 @@ a:focus-visible,
   height: 3px;
   border-radius: 3px;
   background: var(--color-accent);
+}
+
+/* ============================================================
+   B1：実績の「数字」ストリップ（stat band）
+   About セクション冒頭に置く、定量的事実の訴求パーツ。
+   既存トークン（accent / muted / border / space / radius）だけで構成し、
+   新トークンは増やさない。落ち着いた B2B トーンのため装飾は最小限。
+   モバイル：2列グリッド／タブレット以上：4列の横一列。
+   ============================================================ */
+.stat-band {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* モバイルは2×2 */
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-lg);
+  padding: var(--space-md) var(--space-sm);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.stat-band__item {
+  /* dl 直下の div。区切りは控えめなヘアラインで（縦罫）。 */
+  padding: var(--space-xs) var(--space-xs);
+}
+
+/* 数字＝主役。アクセント色＋大きめ。dt だが視覚は「値」。 */
+.stat-band__value {
+  display: block;
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 7vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+/* 単位（年・年〜 など）は数字より小さく添える。 */
+.stat-band__unit {
+  font-size: 0.5em;
+  font-weight: 700;
+  margin-left: 0.15em;
+  color: var(--color-accent);
+}
+
+/* ラベル＝補足。muted＋小。dd の既定マージンを消す。 */
+.stat-band__label {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .stat-band {
+    grid-template-columns: repeat(4, 1fr); /* タブレット以上は横一列 */
+    padding: var(--space-md);
+  }
+
+  /* 項目間に控えめな縦の区切り線（最初の項目以外の左に1本）。
+     色は既存 border。装飾過多を避けるため細線のみ。 */
+  .stat-band__item + .stat-band__item {
+    border-left: 1px solid var(--color-border);
+  }
 }
 
 /* ============================================================
@@ -575,6 +737,18 @@ a:focus-visible,
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
+}
+
+/* B2：縦長の紙面（新聞掲載）を切らずに全体を見せる版。
+   - object-fit:contain で上下を切らず全体を表示（cover の切れを解消）。
+   - aspect-ratio を 3/4 へ（紙面は縦長なので、枠も縦長にして余白を最小化）。
+   - 余白部はオフホワイトの無地背景にして、紙面を上品に引き立てる。
+   横長の NHK カード（4:3 cover）と並んでも、各カードは個別に高さを取り
+   破綻しない（works-grid は各セルが内容に追従するため）。 */
+.work-card__image--contain {
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  background: var(--color-bg-subtle);
 }
 
 .work-card__body {
@@ -778,4 +952,123 @@ a:focus-visible,
 .js:not(.reduce) .is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* ============================================================
+   G2：印刷スタイル（@media print）
+   名刺サイトは「印刷して手渡す」用途がある。紙面では：
+   - 画面専用UI（固定ヘッダー/ハンバーガー/スキップリンク/トップ戻る/装飾アニメ）を隠す
+   - 背景グラデ・濃色面・影を抑え、黒文字＋白背景主体に
+   - 出現アニメで隠れている要素を確実に表示（opacity:1 / transform:none）
+   - カード・セクションが不自然に分断されない配慮（break-inside: avoid）
+   - 連絡先（メールアドレス）が紙面で読めるように
+   実用本位で、過度な作り込みはしない。
+   ============================================================ */
+@media print {
+  /* 全体：黒文字＋白背景、影・装飾を排除して印刷向きに */
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    padding-top: 0 !important; /* 固定ヘッダー分の余白は不要 */
+  }
+
+  /* 画面専用UIを隠す（紙では機能しない/邪魔になる） */
+  .site-header,
+  .nav-toggle,
+  .global-nav,
+  .skip-link,
+  .site-footer__top,
+  .hero__actions {
+    display: none !important;
+  }
+
+  /* 出現アニメで隠れている要素も確実に表示（JS有効時の opacity:0 を打ち消す） */
+  .section-head,
+  .service-card,
+  .work-card,
+  .timeline__item,
+  .about__figure,
+  .about__body,
+  .contact__card,
+  .is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* 背景グラデ・濃色面・影を抑える（インク節約＋可読性） */
+  .hero {
+    background: #fff !important;
+    padding-block: var(--space-md) !important;
+  }
+
+  .section:nth-of-type(even) {
+    background: #fff !important;
+  }
+
+  .stat-band,
+  .service-card,
+  .work-card,
+  .contact__card {
+    box-shadow: none !important;
+    border: 1px solid #999 !important;
+    /* カードが途中でページ分割されないように */
+    break-inside: avoid;
+    page-break-inside: avoid; /* 旧仕様の保険 */
+  }
+
+  /* セクション見出し・タイムライン項目も分断回避 */
+  .section-head,
+  .timeline__item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* セクション境界のヘアラインは残し、面の切替を黒で示す */
+  .section + .section {
+    border-top: 1px solid #ccc !important;
+  }
+
+  /* フッターのダーク面 → 白地に黒文字へ反転 */
+  .site-footer {
+    background: #fff !important;
+    color: #000 !important;
+    border-top: 1px solid #999 !important;
+  }
+
+  .site-footer__logo,
+  .site-footer__tagline,
+  .site-footer__copy {
+    color: #000 !important;
+  }
+
+  /* アクセント色テキストは印刷でも残すが、薄くなりすぎないよう本文は黒に寄せる。
+     muted テキストは紙だと薄すぎるため、しっかり読める濃さへ。 */
+  .about__text,
+  .service-card__desc,
+  .work-card__desc,
+  .timeline__desc,
+  .hero__lead,
+  .stat-band__label {
+    color: #222 !important;
+  }
+
+  /* 連絡先（メール）が紙面で確実に読めるように：黒文字で明示。
+     mailto ボタンはクリックできないが、住所(アドレス)行は必読情報として残す。 */
+  .contact__mail {
+    /* ボタンは枠線付きの黒文字に（背景塗りはインクを食うので白地へ） */
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+
+  .contact__address a {
+    color: #000 !important;
+    border-bottom: none !important;
+  }
+
+  /* リンクは色だけだと判別しづらいので、本文リンクは黒文字に統一 */
+  a {
+    color: #000 !important;
+  }
 }

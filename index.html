@@ -18,6 +18,13 @@
   <meta name="description" content="生産管理・現場改善・ＩＴ化を軸に、中小企業の成長を支援する経営コンサルタント。トヨタ生産方式と日中での豊富な現場経験に基づくコンサルティングを行います。" />
   <meta name="theme-color" content="#2b6cb0" />
 
+  <!--
+    E2：LCP 最適化。ヒーローのメインビジュアル（images/hero.jpg）は
+    ファーストビュー最大要素（LCP）。先読み（preload）＋高優先度で取得させ、
+    LCP の描画開始を早める。img 側にも fetchpriority="high" を付与（loading は付けない＝eager）。
+  -->
+  <link rel="preload" as="image" href="images/hero.jpg" fetchpriority="high" />
+
   <!-- ファビコン -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
@@ -43,6 +50,15 @@
 </head>
 
 <body>
+  <!--
+    D1：スキップリンク（アクセシビリティ）。
+    キーボード/スクリーンリーダー利用者が、固定ヘッダーのナビを毎回辿らず
+    本文へ直行できる王道導線。通常は visually-hidden で視覚から隠し、
+    フォーカスが当たった時だけ左上にアクセント色で出現させる（CSS側）。
+    クリック/Enter で <main id="main-content"> 先頭へジャンプする。
+  -->
+  <a class="skip-link" href="#main-content">本文へスキップ</a>
+
   <!-- ============ ヘッダー / ナビ（Sprint 0 で枠、機能は Sprint 6） ============ -->
   <header class="site-header" id="top">
     <div class="container site-header__inner">
@@ -74,22 +90,33 @@
     </div>
   </header>
 
-  <main>
+  <!--
+    D1：スキップリンクの着地点。tabindex=-1 を付けないブラウザでも
+    id 付き <main> へジャンプできるが、フォーカスを確実に main へ移し
+    以降の Tab が本文から続くよう tabindex="-1" を付与（プログラム的フォーカス可）。
+  -->
+  <main id="main-content" tabindex="-1">
     <!-- ============ Sprint 1: ヒーロー ============ -->
     <section class="hero" id="hero" aria-label="ヒーロー">
       <div class="container hero__inner">
         <!-- 左：テキスト（モバイルでは上） -->
         <div class="hero__body">
-          <p class="hero__eyebrow">岡﨑ＩＴコンサルティング株式会社　代表取締役</p>
-          <!-- キャッチコピー（各画面幅で折れない位置に改行を固定） -->
-          <h1 class="hero__title">生産管理から<br />ＩＴ・人材育成まで。<br />ものづくりに、伴走する。</h1>
+          <p class="hero__eyebrow">岡﨑ＩＴコンサルティング株式会社　取締役</p>
+          <!--
+            キャッチコピー：フレーズ（意味のまとまり）単位で折り返す方式。
+            各フレーズを inline-block の塊にすることで、語の途中で割れず・
+            孤立せず、画面幅に応じてフレーズ間でのみ改行される（手動<br>不要）。
+          -->
+          <h1 class="hero__title">
+            <span class="hero__title-phrase">生産管理から</span><span class="hero__title-phrase">ＩＴ・人材育成まで。</span><span class="hero__title-phrase">ものづくりに、伴走する。</span>
+          </h1>
           <p class="hero__lead">
             トヨタ生産方式に基づく生産管理・現場改善から、ＭＥＳ・ＳＡＰなどの
             ＩＴ導入、海外（中国）展開支援まで。30年以上の現場経験で、
             企業の強みを引き出します。
           </p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="#contact">お問い合わせはこちら</a>
+            <a class="btn btn--primary" href="#contact">まずはお気軽にご相談ください</a>
             <a class="btn btn--ghost" href="#services">サービスを見る</a>
           </div>
         </div>
@@ -101,6 +128,7 @@
             src="images/hero.jpg"
             width="1600"
             height="1067"
+            fetchpriority="high"
             alt="セミナーで登壇する岡﨑好信"
           />
         </div>
@@ -115,6 +143,35 @@
           <p class="section-head__eyebrow">About</p>
           <h2 class="section-head__title">プロフィール</h2>
         </header>
+
+        <!--
+          B1：実績の「数字」を前に出す訴求（数字ストリップ）。
+          すべて本文・経歴に既出の検証済みファクト（新しい数字は作らない）。
+          - 30年以上 … 1987年オムロン入社以来の現場経験（ヒーロー本文と表現を統一）
+          - 通算12年 … 中国でのコンサルティング（About本文に既出）
+          - 2010年〜 … 独立・コンサルタント歴（経歴2010 / 活動歴と一致）
+          - 2013年   … 雁蕩友誼賞 受賞（実績・経歴に既出）
+          装飾は最小限。数字＝アクセント色＋大、ラベル＝muted＋小の王道。
+          見出しは置かず About h2 直下の補足コンテンツとして扱う（階層を乱さない）。
+        -->
+        <dl class="stat-band" aria-label="実績ハイライト">
+          <div class="stat-band__item">
+            <dt class="stat-band__value">30<span class="stat-band__unit">年以上</span></dt>
+            <dd class="stat-band__label">ものづくりの現場経験</dd>
+          </div>
+          <div class="stat-band__item">
+            <dt class="stat-band__value">12<span class="stat-band__unit">年</span></dt>
+            <dd class="stat-band__label">中国でのコンサルティング</dd>
+          </div>
+          <div class="stat-band__item">
+            <dt class="stat-band__value">2010<span class="stat-band__unit">年〜</span></dt>
+            <dd class="stat-band__label">独立・コンサルタント歴</dd>
+          </div>
+          <div class="stat-band__item">
+            <dt class="stat-band__value">2013<span class="stat-band__unit">年</span></dt>
+            <dd class="stat-band__label">雁蕩友誼賞 受賞</dd>
+          </div>
+        </dl>
 
         <div class="about__inner">
           <!-- 顔写真（正面ポートレート） -->
@@ -287,7 +344,13 @@
             </div>
           </li>
           <li class="work-card">
-            <img class="work-card__image" src="images/media-news.jpg" width="425"
+            <!--
+              B2：縦長の新聞紙面（425×510）が 4:3 cover で上下に切れる問題の解消。
+              この紙面は信頼の核なので、専用クラスで「切らずに全体を見せる」方式へ：
+              object-fit:contain ＋ 無地背景。横長の NHK カード（516×302）と並べても
+              カード高さは共通の枠で揃うので、レイアウトの一貫性は保たれる。
+            -->
+            <img class="work-card__image work-card__image--contain" src="images/media-news.jpg" width="425"
               height="510" loading="lazy" alt="岡﨑好信を紹介する新聞記事（中国・温州）" />
             <div class="work-card__body">
               <h4 class="work-card__title">新聞掲載（中国・温州）</h4>
@@ -385,15 +448,22 @@
             内容を確認のうえ、数日以内にご返信いたします。
           </p>
 
-          <!-- 主導線：メール（バックエンド不要。実アドレスは Sprint 7 で差し替え） -->
-          <a class="btn btn--primary contact__mail" href="mailto:oka87005@hotmail.co.jp">
+          <!--
+            主導線：メール（バックエンド不要）。
+            B3：mailto に件名（subject）と簡単な本文（body）をプリセット。
+            クリックでメーラーが「件名入り＋宛名つき本文の雛形」で開き、
+            問い合わせのハードルを下げる。アドレス自体は不変。
+            日本語は URL エンコード済み（subject=「Webサイトからのお問い合わせ」）。
+          -->
+          <a class="btn btn--primary contact__mail"
+            href="mailto:oka87005@hotmail.co.jp?subject=Web%E3%82%B5%E3%82%A4%E3%83%88%E3%81%8B%E3%82%89%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B&amp;body=%E5%B2%A1%EF%A8%91%20%E5%A5%BD%E4%BF%A1%20%E6%A7%98%0D%0A%0D%0AWeb%E3%82%B5%E3%82%A4%E3%83%88%E3%82%92%E6%8B%9D%E8%A6%8B%E3%81%97%E3%80%81%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%E3%80%82%0D%0A%0D%0A%E3%80%90%E3%81%94%E7%9B%B8%E8%AB%87%E5%86%85%E5%AE%B9%E3%80%91%0D%0A%0D%0A%E3%80%90%E8%B2%B4%E7%A4%BE%E5%90%8D%E3%83%BB%E3%81%8A%E5%90%8D%E5%89%8D%E3%80%91%0D%0A">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" aria-hidden="true">
               <rect x="2" y="4" width="20" height="16" rx="2" />
               <path d="m22 7-10 6L2 7" />
             </svg>
-            メールで問い合わせる
+            メールでご相談・お問い合わせ
           </a>
 
           <!-- メールアドレス（クリックで起動・コピーも可） -->
@@ -426,6 +496,66 @@
       <p class="site-footer__copy">&copy; 2026 岡﨑ＩＴコンサルティング株式会社. All rights reserved.</p>
     </div>
   </footer>
+
+  <!--
+    F1：構造化データ（JSON-LD / schema.org）。
+    検索エンジンに「人物（岡﨑 好信）」と「組織（岡﨑ＩＴコンサルティング株式会社）」の
+    関係を機械可読で伝える。Person と Organization を @graph に並べ、@id で相互参照
+    （Person.worksFor → Organization、Organization.founder → Person）。
+    内容はすべてサイト本文・経歴に既出の実データのみ（創作・推測なし）。
+    絶対URLは現在の公開先（GitHub Pages）。譲渡/独自ドメイン時は og:url/canonical と同様に要差し替え。
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://metamol.github.io/okazaki-itc-site/#person",
+        "name": "岡﨑 好信",
+        "jobTitle": "取締役／経営コンサルタント",
+        "nationality": "日本",
+        "url": "https://metamol.github.io/okazaki-itc-site/",
+        "image": "https://metamol.github.io/okazaki-itc-site/images/profile.jpg",
+        "award": "雁蕩友誼賞（2013年・中国 温州市）",
+        "knowsAbout": [
+          "生産管理",
+          "現場改善",
+          "トヨタ生産方式（TPS）",
+          "5S/6S",
+          "MES",
+          "ERP/SAP",
+          "SCM",
+          "原価管理",
+          "KPIマネジメント",
+          "IoT",
+          "中小企業支援"
+        ],
+        "worksFor": {
+          "@id": "https://metamol.github.io/okazaki-itc-site/#organization"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://metamol.github.io/okazaki-itc-site/#organization",
+        "name": "岡﨑ＩＴコンサルティング株式会社",
+        "foundingDate": "2010",
+        "url": "https://metamol.github.io/okazaki-itc-site/",
+        "logo": "https://metamol.github.io/okazaki-itc-site/ogp.jpg",
+        "image": "https://metamol.github.io/okazaki-itc-site/ogp.jpg",
+        "description": "生産管理・現場改善・ＩＴ化を軸に中小企業を支援する経営コンサルティング",
+        "email": "oka87005@hotmail.co.jp",
+        "areaServed": [
+          "日本",
+          "中国"
+        ],
+        "founder": {
+          "@id": "https://metamol.github.io/okazaki-itc-site/#person"
+        }
+      }
+    ]
+  }
+  </script>
 
   <!-- 共通スクリプト（ナビ開閉・スクロール演出は Sprint 6 で実装） -->
   <script src="js/main.js" defer></script>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  カスタム 404 ページ（ページが見つかりません）
+  - GitHub Pages は未存在パスに対し /404.html を返す。
+  - G1の肝：404 は任意の（深い）パスで返るため、外部CSS/JS等の
+    相対パスが壊れやすい。→ このページは「自己完結」（必要な最小スタイルを
+    インラインで保持）にし、外部ファイル依存をゼロにしている。
+  - 「トップへ戻る」はプロジェクトページのサブパスで確実に効くよう
+    ルート相対 /okazaki-itc-site/ を使用（*.github.io/okazaki-itc-site/ で正しく解決）。
+    将来クライアントへ譲渡しても repo 名が同じなら機能する。
+    独自ドメイン化（ルート配信）時のみ、この href の見直しが必要。
+  - robots: noindex（エラーページを検索結果に出さない）。
+  ============================================================
+-->
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ページが見つかりません | 岡﨑ＩＴコンサルティング株式会社</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#2b6cb0" />
+
+  <!-- 自己完結スタイル（本体サイトのデザイン言語をインラインで最小再現） -->
+  <style>
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
+
+    :root {
+      --color-bg: #ffffff;
+      --color-text: #2d2d2d;
+      --color-text-muted: #5b6573;
+      --color-accent: #2b6cb0;
+      --color-accent-dark: #21527e;
+      --color-border: #e5e7eb;
+      --radius: 10px;
+      --font-base: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: var(--font-base);
+      line-height: 1.8;
+      color: var(--color-text);
+      /* 本体ヒーローと同系の、ごく淡い縦グラデ（落ち着いたB2Bトーン） */
+      background: linear-gradient(180deg, #f3f7fb 0%, var(--color-bg) 100%);
+    }
+
+    .nf {
+      width: 100%;
+      max-width: 30rem;
+      text-align: center;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      padding: 2.5rem 1.75rem;
+    }
+
+    /* ロゴ（屋号）。本体サイトのロゴ作法に合わせる。 */
+    .nf__logo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--color-text);
+      margin: 0 0 0.25rem;
+    }
+
+    .nf__name {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin: 0 0 1.75rem;
+    }
+
+    /* 大きな 404（アクセント色）。装飾は控えめに。 */
+    .nf__code {
+      font-size: clamp(3rem, 18vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--color-accent);
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .nf__title {
+      font-size: clamp(1.15rem, 5vw, 1.4rem);
+      margin: 0.75rem 0 0.5rem;
+    }
+
+    .nf__lead {
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      margin: 0 0 1.75rem;
+    }
+
+    /* トップへ戻るボタン（本体の .btn--primary 相当） */
+    .nf__home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      min-height: 48px;
+      padding: 0.7rem 1.6rem;
+      border-radius: 999px;
+      font-weight: 700;
+      text-decoration: none;
+      color: #fff;
+      background: var(--color-accent);
+      transition: background 0.25s ease;
+    }
+
+    .nf__home:hover { background: var(--color-accent-dark); }
+
+    .nf__home:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nf__home { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <p class="nf__logo">岡﨑 好信</p>
+    <p class="nf__name">岡﨑ＩＴコンサルティング株式会社</p>
+
+    <p class="nf__code">404</p>
+    <h1 class="nf__title">ページが見つかりません</h1>
+    <p class="nf__lead">
+      お探しのページは移動または削除された可能性があります。<br />
+      お手数ですが、トップページからお探しください。
+    </p>
+
+    <!--
+      トップへ戻る：プロジェクトページのサブパス（ルート相対）。
+      *.github.io/okazaki-itc-site/ で確実に index.html へ着地する。
+    -->
+    <a class="nf__home" href="/okazaki-itc-site/">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <path d="M9 22V12h6v10" />
+      </svg>
+      トップページへ戻る
+    </a>
+  </main>
+</body>
+</html>
