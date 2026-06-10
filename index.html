@@ -507,7 +507,33 @@
           <!-- メールアドレス（クリックで起動・コピーも可） -->
           <p class="contact__address">
             <a href="mailto:oka87005@hotmail.co.jp">oka87005@hotmail.co.jp</a>
+            <!--
+              保険導線：既定のメールアプリが未設定のPC（Webメール利用者）では
+              mailto を押しても何も起きないため、表示中アドレスをワンクリックで
+              クリップボードへコピーするボタンを併設する。
+              表示は CSS の .js ゲート（JSが動いた時だけ表示）。JS無効時は
+              ボタンが出ない＝従来表示と完全に同じで無害。
+            -->
+            <button class="copy-btn" type="button"
+              aria-label="メールアドレスをコピー"
+              data-copy-text="oka87005@hotmail.co.jp">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              コピー
+            </button>
           </p>
+
+          <!--
+            コピー結果の通知領域。role="status" ＋ aria-live="polite" で
+            スクリーンリーダーにも結果（成功/失敗）を読み上げる。
+            視覚上はボタン直下に約2秒表示して消える（JSが textContent を出し入れ）。
+            空の時も高さを確保し、表示/非表示でレイアウトがガタつかない（CSS側）。
+          -->
+          <p class="copy-status" role="status" aria-live="polite"></p>
         </div>
       </div>
     </section>

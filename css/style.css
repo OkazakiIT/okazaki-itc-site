@@ -289,6 +289,7 @@ body {
 a:focus-visible,
 .btn:focus-visible,
 .nav-toggle:focus-visible,
+.copy-btn:focus-visible,
 .global-nav__list a:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
@@ -885,6 +886,57 @@ a:focus-visible,
   border-bottom-color: var(--color-accent);
 }
 
+/* ----- コピー導線（mailto が機能しない環境向けの保険） -----
+   既定のメールアプリ未設定のPCでは mailto ボタンが無反応のため、
+   表示中アドレスをクリップボードへコピーするボタンを併設する。
+   既定は非表示で、JSが動いた時（html.js）だけ表示する＝JS無効時は
+   従来表示と完全に同じ。見た目は既存トークンだけの控えめなセカンダリ調。 */
+.copy-btn {
+  display: none; /* JS無効時は出さない（.js ゲートで解除） */
+}
+
+.js .copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.6rem;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  vertical-align: middle;
+  word-break: normal; /* 親(.contact__address)の break-all を打ち消す */
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.js .copy-btn:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* コピー結果の通知（成功＝アクセント色／失敗＝読める濃さの赤）。
+   空の時も min-height で1行分を確保し、表示時のレイアウトシフトを防ぐ。
+   コンテナ自体も .js ゲート（JS無効時は空のままなので畳んで非表示）。 */
+.copy-status {
+  display: none;
+}
+
+.js .copy-status {
+  display: block;
+  min-height: 1.5em;
+  margin: var(--space-xs) 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.js .copy-status--error {
+  color: #b42318; /* 白背景で 5.9:1 を確保（4.5:1 以上） */
+}
+
 /* ============================================================
    Sprint 5：フッター
    ============================================================ */
@@ -988,13 +1040,16 @@ a:focus-visible,
     padding-top: 0 !important; /* 固定ヘッダー分の余白は不要 */
   }
 
-  /* 画面専用UIを隠す（紙では機能しない/邪魔になる） */
+  /* 画面専用UIを隠す（紙では機能しない/邪魔になる）
+     コピーボタン・通知領域も紙では無意味なので隠す（アドレス本体は残る） */
   .site-header,
   .nav-toggle,
   .global-nav,
   .skip-link,
   .site-footer__top,
-  .hero__actions {
+  .hero__actions,
+  .copy-btn,
+  .copy-status {
     display: none !important;
   }
 

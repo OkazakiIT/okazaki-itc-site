@@ -109,6 +109,83 @@
     targets.forEach(function (el) { io.observe(el); });
   }
 
+  /* ---------- メールアドレスのコピー（mailto が機能しない環境向けの保険） ----------
+     既定のメールアプリが未設定のPCでは mailto を押しても何も起きないため、
+     表示中アドレスをワンクリックでクリップボードへコピーできるようにする。
+     - 第一候補: navigator.clipboard.writeText（HTTPS/localhost で動く標準API）
+     - フォールバック: 画面外の textarea を選択して document.execCommand('copy')
+       （旧ブラウザや、権限等で clipboard API が拒否された場合の保険）
+     - 結果は role="status"（aria-live=polite）の .copy-status へ表示し、
+       スクリーンリーダーにも読み上げられる。成功表示は約2秒で消す。
+     ボタン自体は CSS の .js ゲートで「JSが動いた時だけ」表示される。 */
+  var copyBtn = document.querySelector('.copy-btn');
+  var copyStatus = document.querySelector('.copy-status');
+
+  if (copyBtn && copyStatus) {
+    var statusTimer = null;
+
+    // 通知領域へメッセージを表示し、一定時間後に消す（連打時は表示時間を延長）。
+    var showCopyStatus = function (message, isError) {
+      copyStatus.textContent = message;
+      copyStatus.classList.toggle('copy-status--error', !!isError);
+      if (statusTimer) window.clearTimeout(statusTimer);
+      // 成功は約2秒で消す。失敗の案内は読む時間が必要なので長めに残す。
+      statusTimer = window.setTimeout(function () {
+        copyStatus.textContent = '';
+        copyStatus.classList.remove('copy-status--error');
+      }, isError ? 6000 : 2000);
+    };
+
+    // フォールバック：textarea + execCommand('copy')。
+    // 画面外固定配置でスクロールを動かさず、コピー後は即座に除去する。
+    var legacyCopy = function (text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', ''); // モバイルでキーボードを出さない
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.left = '-1000px';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length); // iOS Safari 対策
+      var ok = false;
+      try {
+        ok = document.execCommand('copy');
+      } catch (err) {
+        ok = false;
+      }
+      document.body.removeChild(ta);
+      return ok;
+    };
+
+    copyBtn.addEventListener('click', function () {
+      // コピーするのはアドレス文字列のみ（件名・空白などは含めない）。
+      var text = copyBtn.getAttribute('data-copy-text') || '';
+
+      var onSuccess = function () {
+        showCopyStatus('コピーしました', false);
+      };
+      // clipboard API が使えない/拒否された場合はフォールバックを試し、
+      // それも不可なら手動コピーを案内する（これ以上は複雑にしない）。
+      var onFailure = function () {
+        if (legacyCopy(text)) {
+          onSuccess();
+        } else {
+          showCopyStatus(
+            'コピーできませんでした。お手数ですがアドレスを選択してコピーしてください。',
+            true
+          );
+        }
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess, onFailure);
+      } else {
+        onFailure();
+      }
+    });
+  }
+
   /* ---------- C1：ナビの現在地ハイライト（スクロールスパイ） ----------
      出現アニメ用 IO とは別管理。ビューポート内のセクションに対応する
      ナビリンクへ aria-current="page" を「同時に1つだけ」付与する。
