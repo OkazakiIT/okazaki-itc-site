@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://metamol.github.io/okazaki-itc-site/sitemap.xml
+Sitemap: https://okazakiit.github.io/okazaki-itc-site/sitemap.xml
