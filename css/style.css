@@ -151,9 +151,12 @@ body {
 }
 
 .site-header__logo {
-  font-size: 1.1rem;
+  /* ロゴは会社名（16文字）で長いため、狭い画面では自動縮小して
+     ハンバーガーと重ならず1行に収まるようにする（320px端末まで対応）。 */
+  font-size: clamp(0.85rem, 4.4vw, 1.1rem);
   font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap; /* ロゴの途中折り返しを禁止 */
 }
 
 /* ハンバーガーボタン（モバイルで表示、PCで隠す） */
